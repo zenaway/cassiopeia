@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const minimizedHeightSize = 64;
+const double minimizedHeightSize = 64;
 const Duration slideAnimationDuration = Duration(milliseconds: 100);
 
 class View extends StatefulWidget {
@@ -17,51 +17,89 @@ class View extends StatefulWidget {
 }
 
 class _ViewState extends State<View> {
-  // AnimationController _sizeAnimationController;
-  // Animation<double> _sizeAnimation;
-
   double height = 0;
 
   @override
   void initState() {
-    height = widget.viewHeight;
-    // _sizeAnimationController =
-    //     AnimationController(duration: slideAnimationDuration, vsync: this)
-    //       ..forward();
-    // _sizeAnimation = CurvedAnimation(
-    //   parent: _sizeAnimationController,
-    //   curve: Curves.linear,
-    // );
-
-    widget.controller.addListener(() {
-      print(widget.controller.page * widget.viewHeight >= minimizedHeightSize);
-      setState(() {
-        if (widget.controller.page * widget.viewHeight >= minimizedHeightSize) {
-          height = widget.controller.page * widget.viewHeight;
-        } else {
-          height = 64;
-        }
-      });
-    });
-
     super.initState();
+
+    height = widget.viewHeight;
+
+    widget.controller.addListener(updateHeight);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(updateHeight);
+    super.dispose();
+  }
+
+  updateHeight() {
+    setState(() {
+      if ((1 - widget.controller.page) * widget.viewHeight >=
+          minimizedHeightSize) {
+        height = (1 - widget.controller.page) * widget.viewHeight;
+      } else {
+        height = 64;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      print(constraints);
-      return Container(
-        height: height,
-        width: MediaQuery.of(context).size.width,
-        color: Colors.white,
-        child: GestureDetector(
-          onVerticalDragUpdate: (DragUpdateDetails detail) {},
-          child: SafeArea(
-            child: Text("???"),
-          ),
-        ),
-      );
-    });
+    return Container(
+      height: height,
+      width: double.maxFinite,
+      color: Colors.black.withOpacity(
+        0.7,
+      ),
+      child: LayoutBuilder(
+        builder: (BuildContext context, constraints) {
+          if (constraints.maxHeight > minimizedHeightSize * 2) {
+            return SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.width / 2 * 3,
+                        minHeight: minimizedHeightSize,
+                        maxWidth: MediaQuery.of(context).size.width,
+                      ),
+                      child: AspectRatio(
+                        aspectRatio: 3 / 2,
+                        child: Container(
+                          color: Colors.white,
+                          child: Text("???"),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 7,
+                    child: Placeholder(),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Row(
+              children: [
+                AspectRatio(
+                  aspectRatio: 3 / 2,
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+                Expanded(
+                  child: Placeholder(),
+                ),
+              ],
+            );
+          }
+        },
+      ),
+    );
   }
 }

@@ -1,13 +1,9 @@
-import 'dart:convert';
-
-import 'package:cassiopeia/page/view.dart';
 import 'package:cassiopeia/widget/bottomNav.dart';
 import 'package:cassiopeia/widget/header.dart';
 import 'package:cassiopeia/widget/slidePanelSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:glass_kit/glass_kit.dart';
-import 'package:page_transition/page_transition.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -41,13 +37,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           _animationController.forward();
         }
       }
-      // if (_scrollController.position.userScrollDirection ==
-      //         ScrollDirection.reverse &&
-      //     _scrollController.position.atEdge) {
-      //   if (_animationController.isCompleted) {
-      //     _animationController.reverse();
-      //   }
-      // }
     });
 
     _animationController = AnimationController(
@@ -132,26 +121,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   height: 200,
                                   width: 300,
                                   child: InkWell(
-                                    // onTap: () => ,
                                     onTap: () {
                                       SlidePanelSheet.of(context)
                                           .slideAnimationController
                                           .forward();
-                                      // showDialog(
-                                      //   barrierColor: Colors.transparent,
-                                      //   barrierDismissible: false,
-                                      //   context: context,
-                                      //   builder: (context) => Stack(
-                                      //     alignment: Alignment.bottomCenter,
-                                      //     children: [
-                                      //       View(
-                                      //         viewHeight: MediaQuery.of(context)
-                                      //             .size
-                                      //             .height,
-                                      //       ),
-                                      //     ],
-                                      //   ),
-                                      // );
                                     },
                                     child: Text("???"),
                                   ),
