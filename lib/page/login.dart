@@ -22,6 +22,11 @@ class _LoginState extends State<Login> {
   bool loading = false;
   bool login = false;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
+
   requestLogin() async {
     setState(() {
       loading = true;
@@ -104,6 +109,7 @@ class _LoginState extends State<Login> {
                 height: 40,
                 width: 260,
                 child: TextField(
+                  controller: _passwordController,
                   decoration: InputDecoration(
                     hintText: "Password",
                     hintStyle: TextStyle(
@@ -123,6 +129,7 @@ class _LoginState extends State<Login> {
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
                   ),
+                  textAlign: TextAlign.center,
                   obscureText: true,
                 ),
                 gradient: LinearGradient(
@@ -146,12 +153,11 @@ class _LoginState extends State<Login> {
               Hero(
                 tag: "loading",
                 child: Material(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(loading ? 40 : 12),
                   color: Colors.teal,
                   child: InkWell(
-                    onTap: () => requestLogin(),
-                    borderRadius:
-                        BorderRadius.circular(loading ? double.infinity : 12),
+                    onTap: loading ? null : () => requestLogin(),
+                    borderRadius: BorderRadius.circular(loading ? 40 : 12),
                     child: AnimatedContainer(
                       color: Colors.transparent,
                       duration: Duration(

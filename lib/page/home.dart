@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:cassiopeia/page/view.dart';
 import 'package:cassiopeia/widget/bottomNav.dart';
 import 'package:cassiopeia/widget/header.dart';
+import 'package:cassiopeia/widget/slidePanelSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:glass_kit/glass_kit.dart';
+import 'package:page_transition/page_transition.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -72,112 +75,131 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    String foo = "안녕하세요 1234";
-    List<int> bytes = utf8.encode(foo);
-    print("${bytes.length} byte");
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Container(
-        width: size.width,
-        height: size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.fitHeight,
-            alignment: Alignment.centerLeft,
-            image: AssetImage(
-              "assets/images/background.jpg",
+      body: SlidePanelSheet(
+        child: Builder(
+          builder: (context) => Container(
+            width: size.width,
+            height: size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.fitHeight,
+                alignment: Alignment.centerLeft,
+                image: AssetImage(
+                  "assets/images/background.jpg",
+                ),
+              ),
             ),
-          ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Column(
+            child: SafeArea(
+              child: Stack(
                 children: [
-                  Hero(
-                    tag: "loading",
-                    child: Material(
-                      color: Colors.teal,
-                      child: Header(
-                        headerTitle: "???",
-                        rightAction: [
-                          CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                print("click");
-                              },
-                              child: Icon(
-                                Icons.more_vert_rounded,
-                                color: Colors.white,
+                  Column(
+                    children: [
+                      Hero(
+                        tag: "loading",
+                        child: Material(
+                          color: Colors.teal,
+                          child: Header(
+                            headerTitle: "???",
+                            rightAction: [
+                              CircleAvatar(
+                                backgroundColor: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    print("click");
+                                  },
+                                  child: Icon(
+                                    Icons.more_vert_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                        // bottomWidget: SizedBox(
-                        //   width: 20,
-                        //   height: 20,
-                        //   child: Image.asset("assets/images/logo.png"),
-                        // ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                          children: List.generate(
-                            2,
-                            (index) => GlassContainer.frostedGlass(
-                              blur: 15,
-                              height: 200,
-                              width: 300,
-                              child: InkWell(child: Text("???")),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.white.withOpacity(0.40),
-                                  Colors.white.withOpacity(0.10)
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: Column(
+                              children: List.generate(
+                                2,
+                                (index) => GlassContainer.frostedGlass(
+                                  blur: 15,
+                                  height: 200,
+                                  width: 300,
+                                  child: InkWell(
+                                    // onTap: () => ,
+                                    onTap: () {
+                                      SlidePanelSheet.of(context)
+                                          .slideAnimationController
+                                          .forward();
+                                      // showDialog(
+                                      //   barrierColor: Colors.transparent,
+                                      //   barrierDismissible: false,
+                                      //   context: context,
+                                      //   builder: (context) => Stack(
+                                      //     alignment: Alignment.bottomCenter,
+                                      //     children: [
+                                      //       View(
+                                      //         viewHeight: MediaQuery.of(context)
+                                      //             .size
+                                      //             .height,
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // );
+                                    },
+                                    child: Text("???"),
+                                  ),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withOpacity(0.40),
+                                      Colors.white.withOpacity(0.10)
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderGradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withOpacity(0.60),
+                                      Colors.white.withOpacity(0.10),
+                                      Colors.lightBlueAccent.withOpacity(0.05),
+                                      Colors.lightBlueAccent.withOpacity(0.6)
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    stops: [0.0, 0.39, 0.40, 1.0],
+                                  ),
+                                  borderWidth: 0,
+                                  elevation: 3.0,
+                                  shadowColor: Colors.black.withOpacity(0.20),
+                                  alignment: Alignment.center,
+                                  frostedOpacity: 0.06,
+                                  margin: EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(8.0),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
                               ),
-                              borderGradient: LinearGradient(
-                                colors: [
-                                  Colors.white.withOpacity(0.60),
-                                  Colors.white.withOpacity(0.10),
-                                  Colors.lightBlueAccent.withOpacity(0.05),
-                                  Colors.lightBlueAccent.withOpacity(0.6)
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                stops: [0.0, 0.39, 0.40, 1.0],
-                              ),
-                              borderWidth: 0,
-                              elevation: 3.0,
-                              shadowColor: Colors.black.withOpacity(0.20),
-                              alignment: Alignment.center,
-                              frostedOpacity: 0.06,
-                              margin: EdgeInsets.all(8.0),
-                              padding: EdgeInsets.all(8.0),
-                              borderRadius: BorderRadius.circular(16),
                             ),
                           ),
                         ),
                       ),
+                    ],
+                  ),
+                  Positioned(
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: BottomNav(),
                     ),
+                    bottom: 0,
                   ),
                 ],
               ),
-              Positioned(
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: BottomNav(),
-                ),
-                bottom: 0,
-              ),
-            ],
+            ),
           ),
         ),
       ),

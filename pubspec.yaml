@@ -14,6 +14,7 @@ dependencies:
   naver_map_plugin: ^0.9.5
   simple_throttle_debounce: ^1.0.3
   glass_kit: ^1.0.2
+  page_transition: ^1.1.7+6
 
 dev_dependencies:
   flutter_test:

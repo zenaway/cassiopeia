@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:simple_throttle_debounce/simple_throttle_debounce.dart';
 
 const double bottomNavHeight = 50;
@@ -23,132 +22,132 @@ class _BottomNavState extends State<BottomNav> with TickerProviderStateMixin {
         ),
       ),
     ),
-    BottomNavItem(
-      onTab: () {},
-      navItemWidth: 50,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "관심",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-          Text(
-            "그룹",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    ),
-    BottomNavItem(
-      onTab: () {},
-      navItemWidth: 50,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "주식",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-          Text(
-            "현재가",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    ),
-    BottomNavItem(
-      onTab: () {},
-      navItemWidth: 50,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "주식",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-          Text(
-            "주문",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    ),
-    BottomNavItem(
-      onTab: () {},
-      navItemWidth: 70,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "국내주식",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-          Text(
-            "잔고/손익",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    ),
-    BottomNavItem(
-      onTab: () {},
-      navItemWidth: 50,
-      child: Text(
-        "이체",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-        ),
-      ),
-    ),
-    BottomNavItem(
-      onTab: () {},
-      navItemWidth: 50,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "이체",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-          Text(
-            "뉴스",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    ),
+    // BottomNavItem(
+    //   onTab: () {},
+    //   navItemWidth: 50,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Text(
+    //         "관심",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //       Text(
+    //         "그룹",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // ),
+    // BottomNavItem(
+    //   onTab: () {},
+    //   navItemWidth: 50,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Text(
+    //         "주식",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //       Text(
+    //         "현재가",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // ),
+    // BottomNavItem(
+    //   onTab: () {},
+    //   navItemWidth: 50,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Text(
+    //         "주식",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //       Text(
+    //         "주문",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // ),
+    // BottomNavItem(
+    //   onTab: () {},
+    //   navItemWidth: 70,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Text(
+    //         "국내주식",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //       Text(
+    //         "잔고/손익",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // ),
+    // BottomNavItem(
+    //   onTab: () {},
+    //   navItemWidth: 50,
+    //   child: Text(
+    //     "이체",
+    //     style: TextStyle(
+    //       color: Colors.white,
+    //       fontSize: 12,
+    //     ),
+    //   ),
+    // ),
+    // BottomNavItem(
+    //   onTab: () {},
+    //   navItemWidth: 50,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       Text(
+    //         "이체",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //       Text(
+    //         "뉴스",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //           fontSize: 12,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // ),
   ];
   final Duration _animationDuration = Duration(
     milliseconds: 100,
