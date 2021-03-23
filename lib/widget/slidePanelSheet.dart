@@ -1,7 +1,9 @@
 import 'package:cassiopeia/page/view.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
-const Duration slideAnimationDuration = Duration(milliseconds: 100);
+const Duration slideAnimationDuration = Duration(milliseconds: 200);
 
 class SlidePanelSheet extends StatefulWidget {
   final Widget child;
@@ -87,23 +89,48 @@ class SlidePanelSheetState extends State<SlidePanelSheet>
           widget.child,
           SlideTransition(
             position: _slideAnimation,
+            // child: Scrollable(
+            //   axisDirection: AxisDirection.up,
+            //   controller: _pageController,
+            //   physics: PageScrollPhysics().applyTo(
+            //     BouncingScrollPhysics(),
+            //   ),
+            //   semanticChildCount: 2,
+            //   viewportBuilder: (BuildContext context, ViewportOffset position) {
+            //     return Viewport(
+            //       cacheExtent: 0.0,
+            //       cacheExtentStyle: CacheExtentStyle.viewport,
+            //       axisDirection: AxisDirection.up,
+            //       offset: position,
+            //       slivers: <Widget>[
+            //         SliverFillViewport(
+            //           viewportFraction: _pageController.viewportFraction,
+            //           delegate: SliverChildBuilderDelegate(
+            //             (_, __) => View(
+            //               viewHeight: MediaQuery.of(context).size.height,
+            //               controller: _pageController,
+            //             ),
+            //             childCount: 2,
+            //           ),
+            //         ),
+            //       ],
+            //     );
+            //   },
+            // ),
             child: Stack(
+              alignment: Alignment.bottomCenter,
               children: [
                 View(
                   viewHeight: MediaQuery.of(context).size.height,
                   controller: _pageController,
                 ),
-                Positioned.fill(
-                  child: PageView.builder(
-                    itemCount: 2,
-                    controller: _pageController,
-                    scrollDirection: Axis.vertical,
-                    physics: BouncingScrollPhysics(),
-                    reverse: true,
-                    itemBuilder: (context, index) {
-                      return Container();
-                    },
-                  ),
+                PageView.builder(
+                  controller: _pageController,
+                  scrollDirection: Axis.vertical,
+                  physics: BouncingScrollPhysics(),
+                  reverse: true,
+                  itemCount: 2,
+                  itemBuilder: (context, index) => Container(),
                 ),
               ],
             ),
