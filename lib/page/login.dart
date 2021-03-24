@@ -1,4 +1,3 @@
-import 'package:cassiopeia/page/success.dart';
 import 'package:flutter/material.dart';
 import 'package:glass_kit/glass_kit.dart';
 
@@ -28,6 +27,7 @@ class _LoginState extends State<Login> {
   // }
 
   requestLogin() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       loading = true;
     });
