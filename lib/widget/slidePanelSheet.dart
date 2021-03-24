@@ -69,6 +69,7 @@ class SlidePanelSheetState extends State<SlidePanelSheet>
 
   @override
   Widget build(BuildContext context) {
+    final Size windowSize = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
         if (slideAnimationController.isCompleted) {
@@ -88,8 +89,10 @@ class SlidePanelSheetState extends State<SlidePanelSheet>
           SlideTransition(
             position: _slideAnimation,
             child: View(
-              maxHeight: MediaQuery.of(context).size.height,
+              maxHeight: windowSize.height,
               minHeight: 64,
+              maxWidth: windowSize.width,
+              minWidth: 96,
             ),
           ),
         ],

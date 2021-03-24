@@ -31,9 +31,9 @@ class _LoginState extends State<Login> {
     setState(() {
       loading = true;
     });
-    await Future.delayed(
-      loginAnimationDuration,
-    );
+    // await Future.delayed(
+    //   loginAnimationDuration,
+    // );
     Navigator.pushReplacementNamed(
       context,
       "/loading",

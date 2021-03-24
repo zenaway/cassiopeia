@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-const double minimizedHeightSize = 64;
 const Duration slideAnimationDuration = Duration(milliseconds: 100);
+const double bufferedHorizontalHeight = 10.0;
+const double bufferedVerticalHeight = 100.0;
 
 class View extends StatefulWidget {
   final double maxHeight;
   final double minHeight;
+  final double maxWidth;
+  final double minWidth;
+
   View({
     @required this.maxHeight,
     @required this.minHeight,
+    @required this.maxWidth,
+    @required this.minWidth,
   });
 
   @override
@@ -18,11 +24,17 @@ class View extends StatefulWidget {
 
 class _ViewState extends State<View> with TickerProviderStateMixin {
   double _panelHeight = 0;
-  double _verticalContentsOpacity = 1.0;
-  double _horizontalContentsOpacity = 0.0;
+  double _viewContainerHeight = 0;
+  double _viewContainerWidth = 0;
   bool _extended = true;
+
+  double _aspectViewHeight = 0;
+
+  double _horizontalAnimationRatio = 1.0;
+  double _verticalAnimationRatio = 0.0;
+
   AnimationController _scrollAnimationController;
-  AnimationController _verticalContentsAnimationController;
+  // AnimationController _verticalContentsAnimationController;
   // AnimationController _verticalContentsAnimationController;
 
   YoutubePlayerController _controller = YoutubePlayerController(
@@ -40,6 +52,11 @@ class _ViewState extends State<View> with TickerProviderStateMixin {
     super.initState();
 
     _panelHeight = widget.maxHeight;
+    _aspectViewHeight = widget.maxWidth / 3 * 2;
+
+    _viewContainerWidth = widget.maxWidth;
+    _viewContainerHeight = _aspectViewHeight;
+
     _scrollAnimationController = AnimationController(
       vsync: this,
       upperBound: widget.maxHeight,
@@ -49,13 +66,41 @@ class _ViewState extends State<View> with TickerProviderStateMixin {
     )..addListener(() {
         setState(() {
           _panelHeight = _scrollAnimationController.value;
+          if (_panelHeight < _aspectViewHeight) {
+            _viewContainerHeight = _panelHeight;
+          } else if (_panelHeight >= _aspectViewHeight) {
+            _viewContainerHeight = _aspectViewHeight;
+          }
+          if (widget.minHeight + bufferedHorizontalHeight >=
+              _scrollAnimationController.value) {
+            _horizontalAnimationRatio =
+                ((widget.minHeight - _scrollAnimationController.value) /
+                        bufferedHorizontalHeight)
+                    .abs();
+            _viewContainerWidth = widget.minWidth +
+                (widget.maxWidth - widget.minWidth) * _horizontalAnimationRatio;
+          } else if (widget.minHeight + bufferedHorizontalHeight <
+              _scrollAnimationController.value) {
+            _viewContainerWidth = widget.maxWidth;
+            _horizontalAnimationRatio = 1.0;
+          }
+          if (_aspectViewHeight + bufferedVerticalHeight >=
+                  _scrollAnimationController.value &&
+              _aspectViewHeight < _scrollAnimationController.value) {
+            print("${_scrollAnimationController.value} if");
+          } else if (_aspectViewHeight + bufferedVerticalHeight <
+              _scrollAnimationController.value) {
+            print("${_scrollAnimationController.value} else if");
+          } else {
+            print("${_scrollAnimationController.value} else");
+          }
         });
       });
 
-    _verticalContentsAnimationController = AnimationController(
-      vsync: this,
-      duration: Duration.zero,
-    );
+    // _verticalContentsAnimationController = AnimationController(
+    //   vsync: this,
+    //   duration: Duration.zero,
+    // );
   }
 
   @override
@@ -63,23 +108,8 @@ class _ViewState extends State<View> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  updateHeight() {
-    // setState(() {
-    //   if ((1 - widget.controller.page) * widget.maxHeight >=
-    //       minimizedHeightSize) {
-    //     height = (1 - widget.controller.page) * widget.maxHeight;
-    //   } else {
-    //     height = 64;
-    //   }
-    //   verticalContentsFlex = (65 - widget.controller.page * 65).round();
-    // });
-  }
-
   updateDrag(DragUpdateDetails details) {
     double _nextHeight = _scrollAnimationController.value - details.delta.dy;
-    if (details.delta.dy > 0) {
-    } else if (details.delta.dy < 0) {}
-
     _scrollAnimationController.animateTo(
       _nextHeight,
       duration: Duration.zero,
@@ -94,27 +124,13 @@ class _ViewState extends State<View> with TickerProviderStateMixin {
       _scrollAnimationController.fling(velocity: 1.0);
       _extended = true;
     }
-    // if (_panelHeight != widget.maxHeight && _panelHeight != widget.minHeight) {
-    //   double _nextHeight;
-    //   bool _nextExtended;
-    //   if (!_extended) {
-    //     _nextHeight = widget.maxHeight;
-    //     _nextExtended = true;
-    //   } else if (_extended) {
-    //     _nextHeight = widget.minHeight;
-    //     _nextExtended = false;
-    //   }
-    //   setState(() {
-    //     _panelHeight = _nextHeight;
-    //     _extended = _nextExtended;
-    //   });
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: _panelHeight,
+      color: Colors.white,
       child: SafeArea(
         top: false,
         child: GestureDetector(
@@ -125,64 +141,39 @@ class _ViewState extends State<View> with TickerProviderStateMixin {
             updateDragEnd();
           },
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                flex: 35,
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 35,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    alignment: Alignment.topCenter,
+                    height: _viewContainerHeight,
+                    width: _viewContainerWidth,
+                    color: Colors.black,
+                    child: AspectRatio(
+                      aspectRatio: 3 / 2,
                       child: Container(
-                        color: Colors.black,
-                      ),
-                      // child: YoutubePlayerIFrame(
-                      //   controller: _controller,
-                      //   aspectRatio: 3 / 2,
-                      // ),
-                    ),
-                    // if (_verticalContentsFlex < 15)
-                    // Expanded(
-                    //   flex: 65,
-                    //   child: Opacity(
-                    //     opacity: _horizontalContentsOpacity,
-                    //     child: Container(
-                    //       color: Colors.white,
-                    //       child: Center(
-                    //         child: ElevatedButton(
-                    //           onPressed: () {
-                    //             print("??");
-                    //           },
-                    //           child: Text("????"),
-                    //         ),
-                    //       ),
-                    //       // color: Colors.white
-                    //       //     .withOpacity((10 - verticalContentsFlex) / 10),
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-              // if (_verticalContentsFlex > 15)
-              Expanded(
-                flex: 65,
-                child: Opacity(
-                  opacity: _verticalContentsOpacity,
-                  child: Container(
-                    color: Colors.white,
-                    child: Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          print("??");
-                        },
-                        child: Text("????"),
+                        color: Colors.blue,
                       ),
                     ),
-                    // color:
-                    //     Colors.white.withOpacity((65 - verticalContentsFlex) / 100),
                   ),
-                ),
+                  Container(
+                    width: widget.maxWidth - _viewContainerWidth,
+                    height: widget.minHeight,
+                    color: Colors.orange
+                        .withOpacity(1 - _horizontalAnimationRatio),
+                  ),
+                  // SlideTransition(position: , child: FadeTransition(child: ,),),
+                ],
               ),
+              Container(
+                height: _panelHeight - _viewContainerHeight,
+                color: Colors.orange,
+              )
+              // FadeTransition(opacity:  ,child: SizedBox(height: ,),),
             ],
           ),
         ),
