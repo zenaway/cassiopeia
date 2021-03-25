@@ -116,45 +116,28 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             child: Column(
                               children: List.generate(
                                 2,
-                                (index) => GlassContainer.frostedGlass(
-                                  blur: 15,
-                                  height: 200,
-                                  width: 300,
-                                  child: InkWell(
-                                    onTap: () {
-                                      SlidePanelSheet.of(context)
-                                          .slideAnimationController
-                                          .forward();
-                                    },
+                                (index) => InkWell(
+                                  onTap: () {
+                                    SlidePanelSheet.of(context)
+                                        .openPanel("?????");
+                                  },
+                                  child: GlassContainer.frostedGlass(
+                                    blur: 12,
+                                    height: 200,
+                                    width: 300,
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.white.withOpacity(0.20),
+                                        Colors.white.withOpacity(0.10)
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderWidth: 0,
+                                    alignment: Alignment.center,
+                                    frostedOpacity: 0.02,
                                     child: Text("???"),
                                   ),
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Colors.white.withOpacity(0.40),
-                                      Colors.white.withOpacity(0.10)
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderGradient: LinearGradient(
-                                    colors: [
-                                      Colors.white.withOpacity(0.60),
-                                      Colors.white.withOpacity(0.10),
-                                      Colors.lightBlueAccent.withOpacity(0.05),
-                                      Colors.lightBlueAccent.withOpacity(0.6)
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    stops: [0.0, 0.39, 0.40, 1.0],
-                                  ),
-                                  borderWidth: 0,
-                                  elevation: 3.0,
-                                  shadowColor: Colors.black.withOpacity(0.20),
-                                  alignment: Alignment.center,
-                                  frostedOpacity: 0.06,
-                                  margin: EdgeInsets.all(8.0),
-                                  padding: EdgeInsets.all(8.0),
-                                  borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
                             ),
