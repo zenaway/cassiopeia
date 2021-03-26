@@ -10,10 +10,10 @@ class SlidePanelSheet extends StatefulWidget {
 
   SlidePanelSheet({@required this.child});
 
-  static SlidePanelSheetState of(BuildContext context) {
+  static _SlidePanelSheetState of(BuildContext context) {
     assert(context != null);
-    final SlidePanelSheetState result =
-        context.findAncestorStateOfType<SlidePanelSheetState>();
+    final _SlidePanelSheetState result =
+        context.findAncestorStateOfType<_SlidePanelSheetState>();
     if (result != null) return result;
     throw FlutterError.fromParts(
       <DiagnosticsNode>[
@@ -28,16 +28,11 @@ class SlidePanelSheet extends StatefulWidget {
   }
 
   @override
-  SlidePanelSheetState createState() => SlidePanelSheetState();
+  _SlidePanelSheetState createState() => _SlidePanelSheetState();
 }
 
-class SlidePanelSheetState extends State<SlidePanelSheet>
+class _SlidePanelSheetState extends State<SlidePanelSheet>
     with TickerProviderStateMixin {
-  final PageController _pageController = PageController(
-    initialPage: 0,
-    viewportFraction: 1.0,
-  );
-
   AnimationController slideAnimationController;
   AnimationController _scrollAnimationController;
   Animation _slideAnimation;
@@ -60,34 +55,34 @@ class SlidePanelSheetState extends State<SlidePanelSheet>
       ),
     );
 
+    _videoController = VideoPlayerController.network(
+      'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
+    )..initialize().then((value) => setState(() {}));
+
     super.initState();
   }
 
   @override
   void dispose() {
     slideAnimationController.dispose();
-    _pageController.dispose();
+    _scrollAnimationController.dispose();
+    _videoController.dispose();
 
     super.dispose();
   }
 
   void openPanel(String url) {
-    print(url ?? "???");
     if (_scrollAnimationController.value !=
         MediaQuery.of(context).size.height) {
       _scrollAnimationController.fling(velocity: 1.0);
     }
-    // _scrollAnimationController.value = MediaQuery.of(context).size.height;
     slideAnimationController.forward();
   }
-
-  // _videoController = VideoPlayerController.network(
-  //       'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
-  //     ..initialize().then((value) => setState(() {}));
 
   @override
   Widget build(BuildContext context) {
     final Size windowSize = MediaQuery.of(context).size;
+    final EdgeInsets windowPadding = MediaQuery.of(context).padding;
     if (_scrollAnimationController == null) {
       _scrollAnimationController = AnimationController(
         vsync: this,
@@ -117,6 +112,7 @@ class SlidePanelSheetState extends State<SlidePanelSheet>
               minHeight: 64,
               maxWidth: windowSize.width,
               minWidth: 96,
+              topPadding: windowPadding.top,
               resizeAniController: _scrollAnimationController,
               vidioPlayController: _videoController,
             ),
@@ -132,6 +128,7 @@ class SlidePanel extends StatefulWidget {
   final double minHeight;
   final double maxWidth;
   final double minWidth;
+  final double topPadding;
   final AnimationController resizeAniController;
   final VideoPlayerController vidioPlayController;
 
@@ -141,6 +138,7 @@ class SlidePanel extends StatefulWidget {
     @required this.minHeight,
     @required this.maxWidth,
     @required this.minWidth,
+    @required this.topPadding,
     @required this.resizeAniController,
     @required this.vidioPlayController,
   }) : super(key: key);
@@ -159,8 +157,7 @@ class _SlidePanelState extends State<SlidePanel> {
 
   double _horizontalAnimationRatio = 1.0;
   double _verticalAnimationRatio = 1.0;
-
-  AnimationController _scrollAnimationController;
+  double _topPaddingRatio = 1.0;
 
   @override
   void initState() {
@@ -172,12 +169,22 @@ class _SlidePanelState extends State<SlidePanel> {
     _viewContainerWidth = widget.maxWidth;
     _viewContainerHeight = _aspectViewHeight;
 
-    _scrollAnimationController = widget.resizeAniController;
-    _scrollAnimationController.addListener(
+    widget.resizeAniController.addListener(
       () => setState(
         () {
-          _panelHeight = _scrollAnimationController.value;
-          if (_scrollAnimationController.value == widget.maxHeight) {
+          _panelHeight = widget.resizeAniController.value;
+          if (widget.resizeAniController.value <= widget.maxHeight &&
+              widget.maxHeight - widget.topPadding <=
+                  widget.resizeAniController.value) {
+            _topPaddingRatio = 1.0 -
+                (widget.maxHeight - widget.resizeAniController.value) /
+                    widget.topPadding;
+          } else if (widget.resizeAniController.value == widget.maxHeight) {
+            _topPaddingRatio = 1.0;
+          } else {
+            _topPaddingRatio = 0.0;
+          }
+          if (widget.resizeAniController.value == widget.maxHeight) {
             _extended = true;
           }
           if (_panelHeight < _aspectViewHeight) {
@@ -186,26 +193,26 @@ class _SlidePanelState extends State<SlidePanel> {
             _viewContainerHeight = _aspectViewHeight;
           }
           if (widget.minHeight + bufferedHorizontalHeight >=
-              _scrollAnimationController.value) {
+              widget.resizeAniController.value) {
             _horizontalAnimationRatio =
-                ((widget.minHeight - _scrollAnimationController.value) /
+                ((widget.minHeight - widget.resizeAniController.value) /
                         bufferedHorizontalHeight)
                     .abs();
             _viewContainerWidth = widget.minWidth +
                 (widget.maxWidth - widget.minWidth) * _horizontalAnimationRatio;
           } else if (widget.minHeight + bufferedHorizontalHeight <
-              _scrollAnimationController.value) {
+              widget.resizeAniController.value) {
             _viewContainerWidth = widget.maxWidth;
             _horizontalAnimationRatio = 1.0;
           }
           if (_aspectViewHeight + bufferedVerticalHeight >=
-                  _scrollAnimationController.value &&
-              _aspectViewHeight < _scrollAnimationController.value) {
+                  widget.resizeAniController.value &&
+              _aspectViewHeight < widget.resizeAniController.value) {
             _verticalAnimationRatio =
-                (_scrollAnimationController.value - _aspectViewHeight) /
+                (widget.resizeAniController.value - _aspectViewHeight) /
                     bufferedVerticalHeight;
           } else if (_aspectViewHeight + bufferedVerticalHeight <
-                  _scrollAnimationController.value &&
+                  widget.resizeAniController.value &&
               _verticalAnimationRatio != 0.0) {
             _verticalAnimationRatio = 1.0;
           } else if (_verticalAnimationRatio != 0.0) {
@@ -216,25 +223,24 @@ class _SlidePanelState extends State<SlidePanel> {
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   updateDrag(DragUpdateDetails details) {
-    double _nextHeight = _scrollAnimationController.value - details.delta.dy;
-    _scrollAnimationController.animateTo(
+    double _nextHeight = widget.resizeAniController.value - details.delta.dy;
+    widget.resizeAniController.animateTo(
       _nextHeight,
       duration: Duration.zero,
     );
+    if (_panelHeight == widget.minHeight && details.delta.dy > 1.0) {
+      SlidePanelSheet.of(context).slideAnimationController.reverse();
+      widget.vidioPlayController.pause();
+    }
   }
 
-  updateDragEnd() {
+  updateDragEnd(DragEndDetails details) {
     if (_extended && _panelHeight != widget.maxHeight) {
-      _scrollAnimationController.fling(velocity: -0.5);
+      widget.resizeAniController.fling(velocity: -0.5);
       _extended = false;
     } else if (!_extended && _panelHeight != widget.minHeight) {
-      _scrollAnimationController.fling(velocity: 0.5);
+      widget.resizeAniController.fling(velocity: 0.5);
       _extended = true;
     }
   }
@@ -244,55 +250,63 @@ class _SlidePanelState extends State<SlidePanel> {
     return Container(
       height: _panelHeight,
       color: Colors.white,
-      child: SafeArea(
-        top: false,
-        child: GestureDetector(
-          onTap: () {},
-          onVerticalDragUpdate: (details) {
-            updateDrag(details);
-          },
-          onVerticalDragEnd: (details) {
-            updateDragEnd();
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    alignment: Alignment.topCenter,
-                    height: _viewContainerHeight,
-                    width: _viewContainerWidth,
-                    color: Colors.black,
-                    child: AspectRatio(
-                      aspectRatio: 3 / 2,
-                      // child: VideoPlayer(
-                      //   _videoController,
-                      // ),
+      child: GestureDetector(
+        onTap: () {
+          if (widget.vidioPlayController.value.isPlaying) {
+            widget.vidioPlayController.pause();
+          } else {
+            widget.vidioPlayController.play();
+          }
+        },
+        onVerticalDragUpdate: (details) {
+          updateDrag(details);
+        },
+        onVerticalDragEnd: (details) {
+          updateDragEnd(details);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: widget.topPadding * _topPaddingRatio,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.topCenter,
+                  height: _viewContainerHeight,
+                  width: _viewContainerWidth,
+                  color: Colors.black,
+                  child: AspectRatio(
+                    aspectRatio: 3 / 2,
+                    child: VideoPlayer(
+                      widget.vidioPlayController,
                     ),
                   ),
-                  Container(
-                    width: widget.maxWidth - _viewContainerWidth,
-                    height: widget.minHeight,
-                    color: Colors.orange
-                        .withOpacity(1 - _horizontalAnimationRatio),
-                  ),
-                ],
-              ),
-              Opacity(
-                opacity: _verticalAnimationRatio,
-                child: Container(
-                  height: _panelHeight - _viewContainerHeight,
-                  width: widget.maxWidth * 0.6 +
-                      widget.maxWidth * 0.4 * _verticalAnimationRatio,
-                  color: Colors.orange,
                 ),
-              )
-            ],
-          ),
+                Container(
+                  width: widget.maxWidth - _viewContainerWidth,
+                  height: widget.minHeight,
+                  color:
+                      Colors.orange.withOpacity(1 - _horizontalAnimationRatio),
+                ),
+              ],
+            ),
+            Opacity(
+              opacity: _verticalAnimationRatio,
+              child: Container(
+                height: _panelHeight -
+                    _viewContainerHeight -
+                    widget.topPadding * _topPaddingRatio,
+                width: widget.maxWidth * 0.6 +
+                    widget.maxWidth * 0.4 * _verticalAnimationRatio,
+                color: Colors.orange,
+              ),
+            )
+          ],
         ),
       ),
     );

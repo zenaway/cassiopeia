@@ -18,14 +18,7 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: headerColor,
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.white38,
-          ),
-        ),
-      ),
+      color: headerColor,
       height: 64,
       width: MediaQuery.of(context).size.width,
       child: Padding(
