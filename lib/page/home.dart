@@ -176,7 +176,34 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       // ),
                       child: ScrollablePositionedList.builder(
                         itemCount: 500,
-                        itemBuilder: (context, index) => Text('Item $index'),
+                        itemBuilder: (context, index) => InkWell(
+                          onTap: () {
+                            SlidePanelSheet.of(context).openPanel("?????");
+                          },
+                          child: GlassContainer.frostedGlass(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 20,
+                            ),
+                            blur: 3,
+                            height: 200,
+                            width: 300,
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.white.withOpacity(0.20),
+                                Colors.white.withOpacity(0.10)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              5,
+                            ),
+                            borderWidth: 0,
+                            alignment: Alignment.center,
+                            frostedOpacity: 0.02,
+                            child: Text("item $index"),
+                          ),
+                        ),
                         itemScrollController: itemScrollController,
                         itemPositionsListener: itemPositionsListener,
                       ),

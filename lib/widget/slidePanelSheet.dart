@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -38,6 +39,9 @@ class _SlidePanelSheetState extends State<SlidePanelSheet>
   Animation _slideAnimation;
 
   VideoPlayerController _videoController;
+
+  ChewieController _chewieController;
+
   @override
   void initState() {
     slideAnimationController = AnimationController(
@@ -57,7 +61,13 @@ class _SlidePanelSheetState extends State<SlidePanelSheet>
 
     _videoController = VideoPlayerController.network(
       'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4',
-    )..initialize().then((value) => setState(() {}));
+    )..initialize().then((value) {
+        _chewieController = ChewieController(
+          videoPlayerController: _videoController,
+          allowFullScreen: true,
+          autoInitialize: true,
+        );
+      }).then((value) => setState(() {}));
 
     super.initState();
   }
@@ -114,7 +124,7 @@ class _SlidePanelSheetState extends State<SlidePanelSheet>
               minWidth: 96,
               topPadding: windowPadding.top,
               resizeAniController: _scrollAnimationController,
-              vidioPlayController: _videoController,
+              vidioPlayController: _chewieController,
             ),
           ),
         ],
@@ -130,7 +140,7 @@ class SlidePanel extends StatefulWidget {
   final double minWidth;
   final double topPadding;
   final AnimationController resizeAniController;
-  final VideoPlayerController vidioPlayController;
+  final ChewieController vidioPlayController;
 
   SlidePanel({
     Key key,
@@ -252,7 +262,7 @@ class _SlidePanelState extends State<SlidePanel> {
       color: Colors.white,
       child: GestureDetector(
         onTap: () {
-          if (widget.vidioPlayController.value.isPlaying) {
+          if (widget.vidioPlayController.isPlaying) {
             widget.vidioPlayController.pause();
           } else {
             widget.vidioPlayController.play();
@@ -282,9 +292,11 @@ class _SlidePanelState extends State<SlidePanel> {
                   color: Colors.black,
                   child: AspectRatio(
                     aspectRatio: 3 / 2,
-                    child: VideoPlayer(
-                      widget.vidioPlayController,
-                    ),
+                    child: widget.vidioPlayController != null
+                        ? Chewie(
+                            controller: widget.vidioPlayController,
+                          )
+                        : null,
                   ),
                 ),
                 Container(
