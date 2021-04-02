@@ -4,7 +4,6 @@ import 'package:cassiopeia/widget/slidePanelSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:glass_kit/glass_kit.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -13,10 +12,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   final int _scrollSensitivity = 2000;
-
-  final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
 
   ScrollController _scrollController;
 
@@ -59,30 +54,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       parent: _animationController,
       curve: Curves.linear,
     ));
-    _scrollController.addListener(scrollListenerWithItemCount);
-
-    itemPositionsListener.itemPositions.addListener(() {
-      print(itemPositionsListener.itemPositions);
-    });
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(scrollListenerWithItemCount);
     _scrollController.dispose();
     _animationController.dispose();
     super.dispose();
-  }
-
-  void scrollListenerWithItemCount() {
-    int itemCount = 100;
-    double scrollOffset = _scrollController.position.pixels;
-    double viewportHeight = _scrollController.position.viewportDimension;
-    double scrollRange = _scrollController.position.maxScrollExtent -
-        _scrollController.position.minScrollExtent;
-    int firstVisibleItemIndex =
-        (scrollOffset / (scrollRange + viewportHeight) * itemCount).floor();
-    print(firstVisibleItemIndex);
   }
 
   @override
@@ -147,43 +125,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     Expanded(
-                      // child: ListView.builder(
-                      //   padding: EdgeInsets.zero,
-                      //   controller: _scrollController,
-                      //   itemCount: 100,
-                      //   itemBuilder: (context, index) => InkWell(
-                      //     onTap: () {
-                      //       SlidePanelSheet.of(context).openPanel("?????");
-                      //     },
-                      //     child: GlassContainer.frostedGlass(
-                      //       blur: 3,
-                      //       height: 200,
-                      //       width: 300,
-                      //       gradient: LinearGradient(
-                      //         colors: [
-                      //           Colors.white.withOpacity(0.20),
-                      //           Colors.white.withOpacity(0.10)
-                      //         ],
-                      //         begin: Alignment.topLeft,
-                      //         end: Alignment.bottomRight,
-                      //       ),
-                      //       borderWidth: 0,
-                      //       alignment: Alignment.center,
-                      //       frostedOpacity: 0.02,
-                      //       child: Text("item $index"),
-                      //     ),
-                      //   ),
-                      // ),
-                      child: ScrollablePositionedList.builder(
-                        itemCount: 500,
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        controller: _scrollController,
+                        itemCount: 100,
                         itemBuilder: (context, index) => InkWell(
                           onTap: () {
                             SlidePanelSheet.of(context).openPanel("?????");
                           },
                           child: GlassContainer.frostedGlass(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 20,
-                            ),
                             blur: 3,
                             height: 200,
                             width: 300,
@@ -195,17 +145,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ),
                             borderWidth: 0,
                             alignment: Alignment.center,
                             frostedOpacity: 0.02,
                             child: Text("item $index"),
                           ),
                         ),
-                        itemScrollController: itemScrollController,
-                        itemPositionsListener: itemPositionsListener,
                       ),
                     ),
                   ],

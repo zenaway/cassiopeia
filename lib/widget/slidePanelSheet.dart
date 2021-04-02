@@ -182,7 +182,14 @@ class _SlidePanelState extends State<SlidePanel> {
     widget.resizeAniController.addListener(
       () => setState(
         () {
-          _panelHeight = widget.resizeAniController.value;
+          // if(widget.resizeAniController.value)
+          //
+          // 구간
+          // 최대높이 - 패딩톱 ~ 비율높이 + 버퍼높이
+          // 비율높이 + 버퍼높이 ~ 비율높이
+          // 비율높이 ~ 최소높이 + 버퍼
+          // 최소높이 + 버퍼 ~ 최소높이
+
           if (widget.resizeAniController.value <= widget.maxHeight &&
               widget.maxHeight - widget.topPadding <=
                   widget.resizeAniController.value) {
@@ -228,6 +235,32 @@ class _SlidePanelState extends State<SlidePanel> {
           } else if (_verticalAnimationRatio != 0.0) {
             _verticalAnimationRatio = 0.0;
           }
+          //
+          //
+          //
+          // if (widget.resizeAniController.value == widget.maxHeight) {
+          //   // 높이 == 최대높이
+          //   _topPaddingRatio = 1.0;
+          //   _extended = true;
+          // } else if (widget.resizeAniController.value < widget.maxHeight &&
+          //     widget.resizeAniController.value >=
+          //         widget.maxHeight - widget.topPadding) {
+          //   //높이 = 최대높이 ~ toppadding height
+          //   _topPaddingRatio =
+          //       ((widget.maxHeight - widget.resizeAniController.value) /
+          //               widget.topPadding) *
+          //           -1;
+          // } else if (_topPaddingRatio != 0.0) {
+          //   //판정 범위 밖
+          //   _topPaddingRatio = 0.0;
+          // }
+          // if (widget.resizeAniController.value >
+          //     _aspectViewHeight + bufferedVerticalHeight) {
+          //   // 높이 > 비율높이 + 버퍼높이
+          //   _
+          // }
+
+          _panelHeight = widget.resizeAniController.value;
         },
       ),
     );

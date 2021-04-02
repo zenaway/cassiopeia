@@ -1,46 +1,148 @@
 import 'package:flutter/material.dart';
 import 'package:glass_kit/glass_kit.dart';
-
-//아이디, 비밀번호 입력 기능
-//로그인 기능
-//hero?
-//로그인 버튼 애니메이션
-//
+import 'package:simple_throttle_debounce/simple_throttle_debounce.dart';
 
 const Duration loginAnimationDuration = Duration(milliseconds: 3000);
+const Duration textfieldAnimationDuration = Duration(milliseconds: 200);
 
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends State<Login> with TickerProviderStateMixin {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  final FocusNode _idFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+  AnimationController _idAnimationController;
+  AnimationController _passwordAnimationController;
+
+  Animation<Offset> _idSlideAnimation;
+  Animation<Offset> _passwordSlideAnimation;
+
+  Animation<double> _idFadeAnimation;
+  Animation<double> _passwordFadeAnimation;
 
   bool loading = false;
   bool login = false;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
+  String errorMsg = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _idAnimationController = AnimationController(
+      vsync: this,
+      duration: textfieldAnimationDuration,
+    );
+    _passwordAnimationController = AnimationController(
+      vsync: this,
+      duration: textfieldAnimationDuration,
+    );
+
+    _idSlideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset(-1.0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _idAnimationController,
+        curve: Curves.linear,
+      ),
+    );
+
+    _passwordSlideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset(-1.0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _passwordAnimationController,
+        curve: Curves.linear,
+      ),
+    );
+
+    _idFadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _idAnimationController,
+        curve: Curves.linear,
+      ),
+    );
+
+    _passwordFadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _passwordAnimationController,
+        curve: Curves.linear,
+      ),
+    );
+
+    _idFocusNode.addListener(() {
+      if (_idFocusNode.hasFocus) {
+        _idAnimationController.forward();
+      } else {
+        if (_idController.text == "") {
+          _idAnimationController.reverse();
+        }
+      }
+    });
+
+    _passwordFocusNode.addListener(() {
+      if (_passwordFocusNode.hasFocus) {
+        _passwordAnimationController.forward();
+      } else {
+        if (_passwordController.text == "") {
+          _passwordAnimationController.reverse();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _idAnimationController.dispose();
+    _passwordAnimationController.dispose();
+
+    _idController.dispose();
+    _passwordController.dispose();
+
+    _idFocusNode.dispose();
+    _passwordFocusNode.dispose();
+
+    super.dispose();
+  }
 
   requestLogin() async {
     FocusScope.of(context).unfocus();
     setState(() {
       loading = true;
     });
-    // await Future.delayed(
-    //   loginAnimationDuration,
-    // );
-    Navigator.pushReplacementNamed(
-      context,
-      "/loading",
+    await Future.delayed(
+      loginAnimationDuration,
     );
-    // setState(() {
-    //   loading = false;
-    // });
+
+    if (_idController.text != "test" || _passwordController.text != "1234") {
+      setState(() {
+        loading = false;
+        errorMsg = "Please check ID and Password";
+      });
+      await Future.delayed(Duration(milliseconds: 3000), () {
+        setState(() {
+          errorMsg = "";
+        });
+      });
+    } else {
+      Navigator.pushReplacementNamed(
+        context,
+        "/loading",
+      );
+    }
   }
 
   @override
@@ -65,26 +167,48 @@ class _LoginState extends State<Login> {
                 blur: 6,
                 height: 40,
                 width: 260,
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "ID",
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white.withOpacity(0.75),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SlideTransition(
+                      position: _idSlideAnimation,
+                      child: FadeTransition(
+                        opacity: _idFadeAnimation,
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 100,
+                          child: Text(
+                            "ID",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white.withOpacity(0.75),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
+                    TextField(
+                      controller: _idController,
+                      focusNode: _idFocusNode,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 16,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                      onEditingComplete: () {
+                        FocusScope.of(context).requestFocus(_passwordFocusNode);
+                      },
                     ),
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
+                  ],
                 ),
                 gradient: LinearGradient(
                   colors: [
@@ -108,29 +232,47 @@ class _LoginState extends State<Login> {
                 blur: 6,
                 height: 40,
                 width: 260,
-                child: TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    hintText: "Password",
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white.withOpacity(0.75),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SlideTransition(
+                      position: _passwordSlideAnimation,
+                      child: FadeTransition(
+                        opacity: _passwordFadeAnimation,
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 100,
+                          child: Text(
+                            "Password",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white.withOpacity(0.75),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 16,
+                    TextField(
+                      controller: _passwordController,
+                      focusNode: _passwordFocusNode,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 16,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                      obscureText: true,
+                      onEditingComplete: () => requestLogin(),
                     ),
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                  obscureText: true,
+                  ],
                 ),
                 gradient: LinearGradient(
                   colors: [
@@ -154,14 +296,18 @@ class _LoginState extends State<Login> {
                 tag: "loading",
                 child: Material(
                   borderRadius: BorderRadius.circular(loading ? 40 : 12),
-                  color: Colors.teal,
+                  color: Colors.transparent,
                   child: InkWell(
-                    onTap: loading ? null : () => requestLogin(),
+                    onTap:
+                        loading || errorMsg != "" ? null : () => requestLogin(),
                     borderRadius: BorderRadius.circular(loading ? 40 : 12),
                     child: AnimatedContainer(
-                      color: Colors.transparent,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(loading ? 40 : 12),
+                        color: errorMsg == "" ? Colors.teal : Colors.red[400],
+                      ),
                       duration: Duration(
-                        milliseconds: 100,
+                        milliseconds: 300,
                       ),
                       height: 40,
                       width: loading ? 40 : 260,
@@ -181,12 +327,13 @@ class _LoginState extends State<Login> {
                                 ),
                               )
                             : Text(
-                                "LOGIN",
+                                errorMsg == "" ? "LOGIN" : errorMsg,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
                                 ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                       ),
                     ),
